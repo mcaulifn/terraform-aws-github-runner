@@ -340,3 +340,9 @@ variable "runner_additional_security_group_ids" {
   type        = list(string)
   default     = []
 }
+
+variable "sync_runner_binary" {
+  description = "(optional) Boolean to disable runner-binaries-syncer."
+  type        = bool
+  default     = true
+}

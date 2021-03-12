@@ -1,11 +1,15 @@
-# Changelog
+## [0.11.0] - 2021-03-01
 
-All notable changes to this project will be documented in this file.
+### Added
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+- feat: Tag Volume Resources (#570)
+- feat: Retrieve installation id automatically if not present (triggered by ordinary webhook) (#515)
 
-## [Unreleased]
+### Fixed
+
+- fix(bucket): Adds bucket policy #536
+- fix: Upgrade vpc to 2.2.0 and pre-commit terraform hooks (#538)
+- fix(lint): Clean up lint (#534)
 
 ## [0.10.0] - 2021-01-27
 
@@ -151,7 +155,8 @@ terraform import module.runners.module.webhook.aws_cloudwatch_log_group.webhook 
 
 - First release.
 
-[unreleased]: https://github.com/philips-labs/terraform-aws-github-runner/compare/v0.10.0..HEAD
+[unreleased]: https://github.com/philips-labs/terraform-aws-github-runner/compare/v0.11.0..HEAD
+[0.11.0]: https://github.com/philips-labs/terraform-aws-github-runner/releases/tag/v0.10.0..v00.11.0
 [0.10.0]: https://github.com/philips-labs/terraform-aws-github-runner/releases/tag/v0.9.1..v00.10.0
 [0.9.1]: https://github.com/philips-labs/terraform-aws-github-runner/releases/tag/v0.9.0..v0.9.1
 [0.9.0]: https://github.com/philips-labs/terraform-aws-github-runner/releases/tag/v0.8.1..v0.9.0

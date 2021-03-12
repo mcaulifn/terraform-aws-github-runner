@@ -346,3 +346,9 @@ variable "sync_runner_binary" {
   type        = bool
   default     = true
 }
+  
+variable "market_options" {
+  description = "Market options for the action runner instances. Setting the value to `null` let the scaler create on-demand instances instead of spot instanes."
+  type        = string
+  default     = "spot"
+}

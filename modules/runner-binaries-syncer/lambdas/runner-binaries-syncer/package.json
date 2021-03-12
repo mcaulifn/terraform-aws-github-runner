@@ -17,17 +17,17 @@
   "devDependencies": {
     "@octokit/rest": "^18.2.0",
     "@types/jest": "^26.0.20",
-    "@types/node": "^14.14.31",
+    "@types/node": "^14.14.32",
     "@types/request": "^2.48.4",
-    "@typescript-eslint/eslint-plugin": "^4.15.1",
-    "@typescript-eslint/parser": "^4.15.1",
+    "@typescript-eslint/eslint-plugin": "^4.16.1",
+    "@typescript-eslint/parser": "^4.16.1",
     "@zeit/ncc": "^0.22.1",
-    "aws-sdk": "^2.848.0",
-    "eslint": "^7.20.0",
+    "aws-sdk": "^2.862.0",
+    "eslint": "^7.21.0",
     "jest": "^26.6.3",
-    "ts-jest": "^26.5.1",
-    "ts-node-dev": "^1.1.1",
-    "typescript": "^4.1.5"
+    "ts-jest": "^26.5.3",
+    "ts-node-dev": "^1.1.6",
+    "typescript": "^4.2.3"
   },
   "dependencies": {
     "yn": "^4.0.0"

@@ -10,15 +10,15 @@ module "lambdas" {
   lambdas = [
     {
       name = "webhook"
-      tag  = "v0.10.0"
+      tag  = "v0.11.0"
     },
     {
       name = "runners"
-      tag  = "v0.10.0"
+      tag  = "v0.11.0"
     },
     {
       name = "runner-binaries-syncer"
-      tag  = "v0.10.0"
+      tag  = "v0.11.0"
     }
   ]
 }
@@ -35,6 +35,16 @@ No requirements.
 |------|---------|
 | null | n/a |
 
+## Modules
+
+No Modules.
+
+## Resources
+
+| Name |
+|------|
+| [null_resource](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -46,7 +56,6 @@ No requirements.
 | Name | Description |
 |------|-------------|
 | files | n/a |
-
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Philips Forest

@@ -69,6 +69,7 @@ module "runners" {
   s3_location_runner_binaries   = local.s3_action_runner_url
 
   instance_type         = var.instance_type
+  market_options        = var.market_options
   block_device_mappings = var.block_device_mappings
 
   runner_architecture = local.runner_architecture
@@ -99,6 +100,7 @@ module "runners" {
   enable_cloudwatch_agent          = var.enable_cloudwatch_agent
   cloudwatch_config                = var.cloudwatch_config
   runner_log_files                 = var.runner_log_files
+  runner_group_name                = var.runner_group_name
 
   instance_profile_path     = var.instance_profile_path
   role_path                 = var.role_path

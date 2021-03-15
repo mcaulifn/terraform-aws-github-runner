@@ -36,12 +36,6 @@ variable "environment" {
 
 variable "s3_bucket_runner_binaries_arn" {
   description = "Runner binary S3 bucket ARN."
-  #type = object({
-  #  arn = string
-  #})
-  #default = {
-  #  arn = ""
-  #}
   type = string
 }
 

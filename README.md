@@ -1,7 +1,6 @@
-[![awesome-runners](https://img.shields.io/badge/listed%20on-awesome--runners-blue.svg)](https://github.com/jonico/awesome-runners)[![Terraform registry](https://img.shields.io/github/v/release/philips-labs/terraform-aws-github-runner?label=Terraform%20Registry)](https://registry.terraform.io/modules/philips-labs/github-runner/aws/) ![Terraform checks](https://github.com/philips-labs/terraform-aws-github-runner/workflows/Terraform%20root%20module%20checks/badge.svg) ![Lambda Webhook](https://github.com/philips-labs/terraform-aws-github-runner/workflows/Lambda%20Agent%20Webhook/badge.svg) ![Lambda Runners](https://github.com/philips-labs/terraform-aws-github-runner/workflows/Lambda%20Runners/badge.svg) ![Lambda Syncer](https://github.com/philips-labs/terraform-aws-github-runner/workflows/Lambda%20Runner%20Binaries%20Syncer/badge.svg)
-
-
 # Terraform module for scalable self hosted GitHub action runners <!-- omit in toc -->
+
+[![awesome-runners](https://img.shields.io/badge/listed%20on-awesome--runners-blue.svg)](https://github.com/jonico/awesome-runners)[![Terraform registry](https://img.shields.io/github/v/release/philips-labs/terraform-aws-github-runner?label=Terraform%20Registry)](https://registry.terraform.io/modules/philips-labs/github-runner/aws/) ![Terraform checks](https://github.com/philips-labs/terraform-aws-github-runner/workflows/Terraform%20root%20module%20checks/badge.svg) ![Lambda Webhook](https://github.com/philips-labs/terraform-aws-github-runner/workflows/Lambda%20Agent%20Webhook/badge.svg) ![Lambda Runners](https://github.com/philips-labs/terraform-aws-github-runner/workflows/Lambda%20Runners/badge.svg) ![Lambda Syncer](https://github.com/philips-labs/terraform-aws-github-runner/workflows/Lambda%20Runner%20Binaries%20Syncer/badge.svg)
 
 This [Terraform](https://www.terraform.io/) module creates the required infrastructure needed to host [GitHub Actions](https://github.com/features/actions) self hosted, auto scaling runners on [AWS spot instances](https://aws.amazon.com/ec2/spot/). It provides the required logic to handle the life cycle for scaling up and down using a set of AWS Lambda functions. Runners are scaled down to zero to avoid costs when no workflows are active.
 
@@ -75,32 +74,50 @@ Examples are provided in [the example directory](examples/). Please ensure you h
 - AWS cli (optional)
 - Node and yarn (for lambda development).
 
-The module supports two main scenarios for creating runners. On repository level a runner will be dedicated to only one repository, no other repository can use the runner. On organization level you can use the runner(s) for all the repositories within the organization. See https://help.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners for more information. Before starting the deployment you have to choose one option.
+The module supports two main scenarios for creating runners. On repository level a runner will be dedicated to only one repository, no other repository can use the runner. On organization level you can use the runner(s) for all the repositories within the organization. See [GitHub instructions](https://help.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners) for more information. Before starting the deployment you have to choose one option.
 
-GitHub workflows fail immediately if there is no action runner available for your builds. Since this module supports scaling down to zero, builds will fail in case there is no active runner available. We recommend to create an offline runner with matching labels to the configuration. Create this runner manually by following the GitHub instructions for adding a new runner on your local machine. If you stop the process after the step of running the `config.sh` script the runner will remain offline. This offline runner ensures that builds will not fail immediately and stay queued until there is an EC2 runner to pick it up.
+GitHub workflows fail immediately if there is no action runner available for your builds. Since this module supports scaling down to zero, builds will fail in case there is no active runner available. We recommend to create an offline runner with matching labels to the configuration. Create this runner manually by following the [GitHub instructions](https://help.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners) for adding a new runner on your local machine. If you stop the process after the step of running the `config.sh` script the runner will remain offline. This offline runner ensures that builds will not fail immediately and stay queued until there is an EC2 runner to pick it up.
+
+Another convenient way of deploying this temporary required runner is using following approach. This automates all the manual labor.
+
+<details>
+  <summary>Temporary runner using Docker</summary>
+
+  ```bash
+  docker run -it --name my-runner \
+      -e RUNNER_LABELS=selfhosted,Linux,Ubuntu -e RUNNER_NAME=my-repo-docker-runner \
+      -e GITHUB_ACCESS_TOKEN=$GH_PERSONAL_ACCESS_TOKEN \
+      -e RUNNER_REPOSITORY_URL=https://github.com/my-org/my-repo \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      tcardonne/github-runner:ubuntu-20.04
+  ```
+
+</details>
+
+You should stop and remove the container once the runner is registered as the builds would otherwise go to your local Docker container.
 
 The setup consists of running Terraform to create all AWS resources and manually configuring the GitHub App. The Terraform module requires configuration from the GitHub App and the GitHub app requires output from Terraform. Therefore you first create the GitHub App and configure the basics, then run Terraform, and afterwards finalize the configuration of the GitHub App.
 
 ### Setup GitHub App (part 1)
 
-Go to GitHub and create a new app. Beware you can create apps your organization or for a user. For now we support only organization level apps.
+Go to GitHub and [create a new app](https://docs.github.com/en/developers/apps/creating-a-github-app). Beware you can create apps your organization or for a user. For now we support only organization level apps.
 
 1. Create app in Github
 2. Choose a name
 3. Choose a website (mandatory, not required for the module).
 4. Disable the webhook for now (we will configure this later).
 5. Permissions for all runners:
-  - Repository:
-    - `Actions`: Read-only (check for queued jobs)
-    - `Checks`: Read-only (receive events for new builds)
-    - `Metadata`: Read-only (default/required)
+    - Repository:
+      - `Actions`: Read-only (check for queued jobs)
+      - `Checks`: Read-only (receive events for new builds)
+      - `Metadata`: Read-only (default/required)
 6. _Permissions for repo level runners only_:
-  - Repository:
-    - `Administration`: Read & write (to register runner)
+   - Repository:
+     - `Administration`: Read & write (to register runner)
 7. _Permissions for organization level runners only_:
-  - Organization
-    - `Administration`: Read & write (to register runner)
-    - `Self-hosted runners`: Read & write (to register runner)
+   - Organization
+     - `Administration`: Read & write (to register runner)
+     - `Self-hosted runners`: Read & write (to register runner)
 8. Save the new app.
 9. On the General page, make a note of the "App ID" and "Client ID" parameters.
 10. Create a new client secret and also write it down.
@@ -120,7 +137,7 @@ For local development you can build all the lambdas at once using `.ci/build.sh`
 
 #### Service-linked role <!-- omit in toc -->
 
-To create spot instances the `AWSServiceRoleForEC2Spot` role needs to be added to your account. You can do that manually by following the [AWS docs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-requests.html#service-linked-roles-spot-instance-requests). To use terraform for creating the role, either add the following resource or let the module manage the the service linked role by setting `create_service_linked_role` to `true`. Be aware this is an account global role, so maybe you don't want to mange it via a specific deployment.
+To create spot instances the `AWSServiceRoleForEC2Spot` role needs to be added to your account. You can do that manually by following the [AWS docs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-requests.html#service-linked-roles-spot-instance-requests). To use terraform for creating the role, either add the following resource or let the module manage the the service linked role by setting `create_service_linked_role_spot` to `true`. Be aware this is an account global role, so maybe you don't want to manage it via a specific deployment.
 
 ```hcl
 resource "aws_iam_service_linked_role" "spot" {
@@ -180,7 +197,7 @@ Go back to the GitHub App and update the following settings.
 1. Enable the webhook.
 2. Provide the webhook url, should be part of the output of terraform.
 3. Provide the webhook secret.
-4. Enable the `check_run` event for the webhook.
+4. In the "Permissions & Events" section and then "Subscribe to Events" subsection, check "Check Run".
 5. In the "Install App" section, install the App in your organization, either in all or in selected repositories.
 
 You are now ready to run action workloads on self hosted runner. Remember that builds will fail if there is no (offline) runner available with matching labels.
@@ -197,7 +214,7 @@ This is the default, no additional configuration is required.
 
 You have to create an configure you KMS key. The module will use the context with key: `Environment` and value `var.environment` as encryption context.
 
-```HCL
+```hcl
 resource "aws_kms_key" "github" {
   is_enabled = true
 }
@@ -231,7 +248,7 @@ idle_config = [{
 
 Cron expressions are parsed by [cron-parser](https://github.com/harrisiirak/cron-parser#readme). The supported syntax.
 
-```
+```bash
 *    *    *    *    *    *
 ┬    ┬    ┬    ┬    ┬    ┬
 │    │    │    │    │    |
@@ -328,7 +345,7 @@ No requirements.
 | lambda\_subnet\_ids | List of subnets in which the action runners will be launched, the subnets needs to be subnets in the `vpc_id`. | `list(string)` | `[]` | no |
 | logging\_retention\_in\_days | Specifies the number of days you want to retain log events for the lambda log group. Possible values are: 0, 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653. | `number` | `180` | no |
 | manage\_kms\_key | Let the module manage the KMS key. | `bool` | `true` | no |
-| market\_options | Set it to null to use on demand runners. | `string` | `"spot"` | no |
+| market\_options | Market options for the action runner instances. Setting the value to `null` let the scaler create on-demand instances instead of spot instances. | `string` | `"spot"` | no |
 | minimum\_running\_time\_in\_minutes | The time an ec2 action runner should be running at minimum before terminated if non busy. | `number` | `5` | no |
 | role\_path | The path that will be added to role path for created roles, if not set the environment name will be used. | `string` | `null` | no |
 | role\_permissions\_boundary | Permissions boundary that will be added to the created roles. | `string` | `null` | no |
@@ -379,7 +396,7 @@ We welcome contribution, please checkout the [contribution guide](CONTRIBUTING.m
 
 This module is part of the Philips Forest.
 
-```
+```bash
 
                                                      ___                   _
                                                     / __\__  _ __ ___  ___| |_
@@ -394,7 +411,3 @@ This module is part of the Philips Forest.
 Talk to the forestkeepers in the `forest`-channel on Slack.
 
 [![Slack](https://philips-software-slackin.now.sh/badge.svg)](https://philips-software-slackin.now.sh)
-
-```
-
-```

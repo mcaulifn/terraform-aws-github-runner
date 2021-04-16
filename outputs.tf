@@ -12,7 +12,7 @@ output "runners" {
 }
 
 output "binaries_syncer" {
-  value = module.runner_binaries
+  value = var.sync_runner_binary ? module.runner_binaries : null
 }
 
 output "webhook" {

@@ -3,10 +3,8 @@ import * as scaleUpModule from './scale-up';
 import { listRunners, createRunner, RunnerInputParameters } from './runners';
 import * as ghAuth from './gh-auth';
 import nock from 'nock';
+import { Octokit } from '@octokit/rest';
 
-jest.mock('@octokit/auth-app', () => ({
-  createAppAuth: jest.fn().mockImplementation(() => jest.fn().mockImplementation(() => ({ token: 'Blaat' }))),
-}));
 const mockOctokit = {
   checks: { get: jest.fn() },
   actions: {
@@ -18,11 +16,17 @@ const mockOctokit = {
     getRepoInstallation: jest.fn(),
   },
 };
+
 jest.mock('@octokit/rest', () => ({
   Octokit: jest.fn().mockImplementation(() => mockOctokit),
 }));
 
 jest.mock('./runners');
+jest.mock('./gh-auth');
+
+const mocktokit = Octokit as jest.MockedClass<typeof Octokit>;
+const mockedAuth = mocked(ghAuth.createGithubAuth, true);
+const mockCreateClient = mocked(ghAuth.createOctoClient, true);
 
 const TEST_DATA: scaleUpModule.ActionRequestMessage = {
   id: 1,
@@ -103,6 +107,15 @@ beforeEach(() => {
 
 describe('scaleUp with GHES', () => {
   beforeEach(() => {
+    mockedAuth.mockResolvedValue({
+      type: 'app',
+      token: 'token',
+      appId: TEST_DATA.installationId,
+      expiresAt: 'some-date'
+    });
+
+    mockCreateClient.mockResolvedValue(new mocktokit);
+
     process.env.GHES_URL = 'https://github.enterprise.something';
   });
 
@@ -244,6 +257,15 @@ describe('scaleUp with GHES', () => {
     });
 
     it('creates a token when maximum runners has not been reached', async () => {
+      await scaleUpModule.scaleUp('aws:sqs', TEST_DATA);
+      expect(mockOctokit.actions.createRegistrationTokenForRepo).toBeCalledWith({
+        owner: TEST_DATA.repositoryOwner,
+        repo: TEST_DATA.repositoryName,
+      });
+    });
+
+    it('uses the default runner max count', async () => {
+      process.env.RUNNERS_MAXIMUM_COUNT = undefined;
       await scaleUpModule.scaleUp('aws:sqs', TEST_DATA);
       expect(mockOctokit.actions.createRegistrationTokenForRepo).toBeCalledWith({
         owner: TEST_DATA.repositoryOwner,

@@ -195,14 +195,6 @@ variable "runners_maximum_count" {
   default     = 3
 }
 
-variable "encryption" {
-  description = "KMS key to encrypted lambda environment secrets. Either provide a key and `encrypt` set to `true`. Or set the key to `null` and encrypt to `false`."
-  type = object({
-    kms_key_id = string
-    encrypt    = bool
-  })
-}
-
 variable "runner_architecture" {
   description = "The platform architecture of the runner instance_type."
   type        = string

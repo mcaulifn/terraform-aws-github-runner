@@ -59,10 +59,6 @@ module "runners" {
   subnet_ids  = var.subnet_ids
   environment = var.environment
   tags        = local.tags
-  encryption = {
-    kms_key_id = local.kms_key_id
-    encrypt    = var.encrypt_secrets
-  }
 
   s3_bucket_runner_binaries   = module.runner_binaries.bucket
   s3_location_runner_binaries = local.s3_action_runner_url

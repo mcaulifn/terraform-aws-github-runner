@@ -1,17 +1,3 @@
-resource "aws_kms_grant" "scale_up" {
-  count             = var.encryption.encrypt ? 1 : 0
-  name              = "${var.environment}-scale-up"
-  key_id            = var.encryption.kms_key_id
-  grantee_principal = aws_iam_role.scale_up.arn
-  operations        = ["Decrypt"]
-
-  constraints {
-    encryption_context_equals = {
-      Environment = var.environment
-    }
-  }
-}
-
 resource "aws_lambda_function" "scale_up" {
   s3_bucket                      = var.lambda_s3_bucket != null ? var.lambda_s3_bucket : null
   s3_key                         = var.runners_lambda_s3_key != null ? var.runners_lambda_s3_key : null
@@ -31,11 +17,6 @@ resource "aws_lambda_function" "scale_up" {
       ENABLE_ORGANIZATION_RUNNERS = var.enable_organization_runners
       ENVIRONMENT                 = var.environment
       GHES_URL                    = var.ghes_url
-      GITHUB_APP_CLIENT_ID        = var.github_app.client_id
-      GITHUB_APP_CLIENT_SECRET    = local.github_app_client_secret
-      GITHUB_APP_ID               = var.github_app.id
-      GITHUB_APP_KEY_BASE64       = local.github_app_key_base64
-      KMS_KEY_ID                  = var.encryption.kms_key_id
       RUNNER_EXTRA_LABELS         = var.runner_extra_labels
       RUNNER_GROUP_NAME           = var.runner_group_name
       RUNNERS_MAXIMUM_COUNT       = var.runners_maximum_count

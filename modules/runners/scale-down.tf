@@ -1,17 +1,3 @@
-resource "aws_kms_grant" "scale_down" {
-  count             = var.encryption.encrypt ? 1 : 0
-  name              = "${var.environment}-scale-down"
-  key_id            = var.encryption.kms_key_id
-  grantee_principal = aws_iam_role.scale_down.arn
-  operations        = ["Decrypt"]
-
-  constraints {
-    encryption_context_equals = {
-      Environment = var.environment
-    }
-  }
-}
-
 resource "aws_lambda_function" "scale_down" {
   s3_bucket         = var.lambda_s3_bucket != null ? var.lambda_s3_bucket : null
   s3_key            = var.runners_lambda_s3_key != null ? var.runners_lambda_s3_key : null

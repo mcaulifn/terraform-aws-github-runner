@@ -374,7 +374,8 @@ describe('scaleUp with public GH', () => {
     beforeEach(() => {
       process.env.ENABLE_ORGANIZATION_RUNNERS = 'true';
       expectedRunnerParams = { ...EXPECTED_RUNNER_PARAMS };
-      expectedRunnerParams.runnerServiceConfig = `--url https://github.com/${TEST_DATA.repositoryOwner} --token 1234abcd `;
+      expectedRunnerParams.runnerServiceConfig =
+        `--url https://github.com/${TEST_DATA.repositoryOwner} ` + '--token 1234abcd ';
     });
 
     it('gets the current org level runners', async () => {

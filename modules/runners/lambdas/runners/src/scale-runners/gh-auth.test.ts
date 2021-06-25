@@ -83,6 +83,7 @@ describe('Test createGithubAuth', () => {
       .mockResolvedValueOnce(GITHUB_APP_CLIENT_SECRET);
     const mockedAuth = jest.fn();
     mockedAuth.mockResolvedValue({ token });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     mockedCreatAppAuth.mockImplementation((authOptions: StrategyOptions) => {
       return mockedAuth;
     });
@@ -128,6 +129,7 @@ describe('Test createGithubAuth', () => {
       .mockResolvedValueOnce(GITHUB_APP_CLIENT_SECRET);
     const mockedAuth = jest.fn();
     mockedAuth.mockResolvedValue({ token });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     mockedCreatAppAuth.mockImplementation((authOptions: StrategyOptions) => {
       return mockedAuth;
     });
@@ -174,6 +176,7 @@ describe('Test createGithubAuth', () => {
       .mockResolvedValueOnce(GITHUB_APP_CLIENT_SECRET);
     const mockedAuth = jest.fn();
     mockedAuth.mockResolvedValue({ token });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     mockedCreatAppAuth.mockImplementation((authOptions: StrategyOptions) => {
       return mockedAuth;
     });

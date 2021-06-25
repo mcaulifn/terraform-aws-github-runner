@@ -20,15 +20,14 @@ describe('Test createGithubAuth', () => {
     const parameterValue = 'test';
     const parameterName = 'testParam';
     const output: GetParameterCommandOutput = {
-      Parameter:
-      {
+      Parameter: {
         Name: parameterName,
-        Type: "SecureString",
-        Value: parameterValue
+        Type: 'SecureString',
+        Value: parameterValue,
       },
       $metadata: {
-        httpStatusCode: 200
-      }
+        httpStatusCode: 200,
+      },
     };
 
     SSM.prototype.getParameter = jest.fn().mockResolvedValue(output);

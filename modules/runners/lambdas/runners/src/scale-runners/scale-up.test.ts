@@ -52,7 +52,7 @@ const EXPECTED_RUNNER_PARAMS: RunnerInputParameters = {
   environment: 'unit-test-environment',
   runnerServiceConfig: `--url https://github.enterprise.something/${TEST_DATA.repositoryOwner} --token 1234abcd `,
   runnerType: 'Org',
-  runnerOwner: TEST_DATA.repositoryOwner
+  runnerOwner: TEST_DATA.repositoryOwner,
 };
 let expectedRunnerParams: RunnerInputParameters;
 
@@ -111,10 +111,10 @@ describe('scaleUp with GHES', () => {
       type: 'app',
       token: 'token',
       appId: TEST_DATA.installationId,
-      expiresAt: 'some-date'
+      expiresAt: 'some-date',
     });
 
-    mockCreateClient.mockResolvedValue(new mocktokit);
+    mockCreateClient.mockResolvedValue(new mocktokit());
 
     process.env.GHES_URL = 'https://github.enterprise.something';
   });
@@ -152,7 +152,7 @@ describe('scaleUp with GHES', () => {
       expect(listRunners).toBeCalledWith({
         environment: 'unit-test-environment',
         runnerType: 'Org',
-        runnerOwner: TEST_DATA.repositoryOwner
+        runnerOwner: TEST_DATA.repositoryOwner,
       });
     });
 
@@ -178,7 +178,7 @@ describe('scaleUp with GHES', () => {
       expect(spy).toBeCalledWith(
         TEST_DATA.installationId,
         'installation',
-        "https://github.enterprise.something/api/v3"
+        'https://github.enterprise.something/api/v3',
       );
     });
 
@@ -186,12 +186,12 @@ describe('scaleUp with GHES', () => {
       const spy = jest.spyOn(ghAuth, 'createGithubAuth');
       await scaleUpModule.scaleUp('aws:sqs', TEST_DATA_WITHOUT_INSTALL_ID);
       expect(mockOctokit.apps.getRepoInstallation).not.toBeCalled();
-      expect(spy).toHaveBeenNthCalledWith(1, undefined, 'app', "https://github.enterprise.something/api/v3");
+      expect(spy).toHaveBeenNthCalledWith(1, undefined, 'app', 'https://github.enterprise.something/api/v3');
       expect(spy).toHaveBeenNthCalledWith(
         2,
         TEST_DATA.installationId,
         'installation',
-        "https://github.enterprise.something/api/v3"
+        'https://github.enterprise.something/api/v3',
       );
     });
 
@@ -204,8 +204,8 @@ describe('scaleUp with GHES', () => {
       process.env.RUNNER_EXTRA_LABELS = 'label1,label2';
       process.env.RUNNER_GROUP_NAME = 'TEST_GROUP';
       await scaleUpModule.scaleUp('aws:sqs', TEST_DATA);
-      expectedRunnerParams.runnerServiceConfig = expectedRunnerParams.runnerServiceConfig +
-        `--labels label1,label2 --runnergroup TEST_GROUP`;
+      expectedRunnerParams.runnerServiceConfig =
+        expectedRunnerParams.runnerServiceConfig + `--labels label1,label2 --runnergroup TEST_GROUP`;
       expect(createRunner).toBeCalledWith(expectedRunnerParams, 'lt-1');
     });
 
@@ -236,7 +236,8 @@ describe('scaleUp with GHES', () => {
       expectedRunnerParams = { ...EXPECTED_RUNNER_PARAMS };
       expectedRunnerParams.runnerType = 'Repo';
       expectedRunnerParams.runnerOwner = `${TEST_DATA.repositoryOwner}/${TEST_DATA.repositoryName}`;
-      expectedRunnerParams.runnerServiceConfig = `--url ` +
+      expectedRunnerParams.runnerServiceConfig =
+        `--url ` +
         `https://github.enterprise.something/${TEST_DATA.repositoryOwner}/${TEST_DATA.repositoryName} ` +
         `--token 1234abcd `;
     });
@@ -281,7 +282,7 @@ describe('scaleUp with GHES', () => {
       expect(spy).toBeCalledWith(
         TEST_DATA.installationId,
         'installation',
-        "https://github.enterprise.something/api/v3"
+        'https://github.enterprise.something/api/v3',
       );
     });
 
@@ -289,12 +290,12 @@ describe('scaleUp with GHES', () => {
       const spy = jest.spyOn(ghAuth, 'createGithubAuth');
       await scaleUpModule.scaleUp('aws:sqs', TEST_DATA_WITHOUT_INSTALL_ID);
       expect(mockOctokit.apps.getOrgInstallation).not.toBeCalled();
-      expect(spy).toHaveBeenNthCalledWith(1, undefined, 'app', "https://github.enterprise.something/api/v3");
+      expect(spy).toHaveBeenNthCalledWith(1, undefined, 'app', 'https://github.enterprise.something/api/v3');
       expect(spy).toHaveBeenNthCalledWith(
         2,
         TEST_DATA.installationId,
         'installation',
-        "https://github.enterprise.something/api/v3"
+        'https://github.enterprise.something/api/v3',
       );
     });
 
@@ -311,7 +312,8 @@ describe('scaleUp with GHES', () => {
       process.env.RUNNER_EXTRA_LABELS = 'label1,label2';
       process.env.RUNNER_GROUP_NAME = 'TEST_GROUP_IGNORED';
       await scaleUpModule.scaleUp('aws:sqs', TEST_DATA);
-      expectedRunnerParams.runnerServiceConfig = `--url ` +
+      expectedRunnerParams.runnerServiceConfig =
+        `--url ` +
         `https://github.enterprise.something/${TEST_DATA.repositoryOwner}/${TEST_DATA.repositoryName} ` +
         `--token 1234abcd --labels label1,label2`;
       expectedRunnerParams.runnerOwner = `${TEST_DATA.repositoryOwner}/${TEST_DATA.repositoryName}`;
@@ -349,15 +351,15 @@ describe('scaleUp with public GH', () => {
     await scaleUpModule.scaleUp('aws:sqs', TEST_DATA);
     expect(mockOctokit.apps.getOrgInstallation).not.toBeCalled();
     expect(mockOctokit.apps.getRepoInstallation).not.toBeCalled();
-    expect(spy).toBeCalledWith(TEST_DATA.installationId, 'installation', "");
+    expect(spy).toBeCalledWith(TEST_DATA.installationId, 'installation', '');
   });
 
   it('retrieves installation id if not set', async () => {
     const spy = jest.spyOn(ghAuth, 'createGithubAuth');
     await scaleUpModule.scaleUp('aws:sqs', TEST_DATA_WITHOUT_INSTALL_ID);
     expect(mockOctokit.apps.getRepoInstallation).not.toBeCalled();
-    expect(spy).toHaveBeenNthCalledWith(1, undefined, 'app', "");
-    expect(spy).toHaveBeenNthCalledWith(2, TEST_DATA.installationId, 'installation', "");
+    expect(spy).toHaveBeenNthCalledWith(1, undefined, 'app', '');
+    expect(spy).toHaveBeenNthCalledWith(2, TEST_DATA.installationId, 'installation', '');
   });
 
   it('does not list runners when no workflows are queued', async () => {
@@ -372,8 +374,7 @@ describe('scaleUp with public GH', () => {
     beforeEach(() => {
       process.env.ENABLE_ORGANIZATION_RUNNERS = 'true';
       expectedRunnerParams = { ...EXPECTED_RUNNER_PARAMS };
-      expectedRunnerParams.runnerServiceConfig =
-        `--url https://github.com/${TEST_DATA.repositoryOwner} --token 1234abcd `;
+      expectedRunnerParams.runnerServiceConfig = `--url https://github.com/${TEST_DATA.repositoryOwner} --token 1234abcd `;
     });
 
     it('gets the current org level runners', async () => {
@@ -381,7 +382,7 @@ describe('scaleUp with public GH', () => {
       expect(listRunners).toBeCalledWith({
         environment: 'unit-test-environment',
         runnerType: 'Org',
-        runnerOwner: TEST_DATA.repositoryOwner
+        runnerOwner: TEST_DATA.repositoryOwner,
       });
     });
 
@@ -429,9 +430,8 @@ describe('scaleUp with public GH', () => {
       expectedRunnerParams = { ...EXPECTED_RUNNER_PARAMS };
       expectedRunnerParams.runnerType = 'Repo';
       expectedRunnerParams.runnerOwner = `${TEST_DATA.repositoryOwner}/${TEST_DATA.repositoryName}`;
-      expectedRunnerParams.runnerServiceConfig = `--url ` +
-        `https://github.com/${TEST_DATA.repositoryOwner}/${TEST_DATA.repositoryName} ` +
-        `--token 1234abcd `;
+      expectedRunnerParams.runnerServiceConfig =
+        `--url ` + `https://github.com/${TEST_DATA.repositoryOwner}/${TEST_DATA.repositoryName} ` + `--token 1234abcd `;
     });
 
     it('gets the current repo level runners', async () => {
@@ -462,15 +462,15 @@ describe('scaleUp with public GH', () => {
       await scaleUpModule.scaleUp('aws:sqs', TEST_DATA);
       expect(mockOctokit.apps.getOrgInstallation).not.toBeCalled();
       expect(mockOctokit.apps.getRepoInstallation).not.toBeCalled();
-      expect(spy).toBeCalledWith(TEST_DATA.installationId, 'installation', "");
+      expect(spy).toBeCalledWith(TEST_DATA.installationId, 'installation', '');
     });
 
     it('retrieves installation id if not set', async () => {
       const spy = jest.spyOn(ghAuth, 'createGithubAuth');
       await scaleUpModule.scaleUp('aws:sqs', TEST_DATA_WITHOUT_INSTALL_ID);
       expect(mockOctokit.apps.getOrgInstallation).not.toBeCalled();
-      expect(spy).toHaveBeenNthCalledWith(1, undefined, 'app', "");
-      expect(spy).toHaveBeenNthCalledWith(2, TEST_DATA.installationId, 'installation', "");
+      expect(spy).toHaveBeenNthCalledWith(1, undefined, 'app', '');
+      expect(spy).toHaveBeenNthCalledWith(2, TEST_DATA.installationId, 'installation', '');
     });
 
     it('creates a runner with correct config and labels', async () => {

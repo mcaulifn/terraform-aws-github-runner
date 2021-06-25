@@ -2,7 +2,6 @@ import nock from 'nock';
 import { getParameterValue } from './ssm';
 import { SSM, GetParameterCommandOutput } from '@aws-sdk/client-ssm';
 
-jest.mock('./ssm');
 jest.mock('@aws-sdk/client-ssm');
 
 const cleanEnv = process.env;
@@ -32,8 +31,7 @@ describe('Test createGithubAuth', () => {
       }
     };
 
-    const mockedClient = SSM as jest.MockedClass<typeof SSM>;
-    mockedClient.prototype.getParameter.mockResolvedValue(output);
+    SSM.prototype.getParameter = jest.fn().mockResolvedValue(output);
 
     // Act
     const result = await getParameterValue(ENVIRONMENT, parameterName);

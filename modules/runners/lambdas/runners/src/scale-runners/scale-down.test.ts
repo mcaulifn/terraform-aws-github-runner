@@ -157,9 +157,9 @@ describe('scaleDown', () => {
         type: 'app',
         token: 'token',
         appId: 1,
-        expiresAt: 'some-date'
+        expiresAt: 'some-date',
       });
-      mockCreateClient.mockResolvedValue(new mocktokit);
+      mockCreateClient.mockResolvedValue(new mocktokit());
       const mockListRunners = mocked(listRunners);
       mockListRunners.mockImplementation(async () => []);
     });

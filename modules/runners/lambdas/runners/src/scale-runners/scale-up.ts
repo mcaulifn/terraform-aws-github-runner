@@ -30,16 +30,16 @@ export const scaleUp = async (eventSource: string, payload: ActionRequestMessage
     const githubClient = await createOctoClient(ghAuth.token, ghesApiUrl);
     installationId = enableOrgLevel
       ? (
-        await githubClient.apps.getOrgInstallation({
-          org: payload.repositoryOwner,
-        })
-      ).data.id
+          await githubClient.apps.getOrgInstallation({
+            org: payload.repositoryOwner,
+          })
+        ).data.id
       : (
-        await githubClient.apps.getRepoInstallation({
-          owner: payload.repositoryOwner,
-          repo: payload.repositoryName,
-        })
-      ).data.id;
+          await githubClient.apps.getRepoInstallation({
+            owner: payload.repositoryOwner,
+            repo: payload.repositoryName,
+          })
+        ).data.id;
   }
 
   const ghAuth = await createGithubAuth(installationId, 'installation', ghesApiUrl);
@@ -58,20 +58,18 @@ export const scaleUp = async (eventSource: string, payload: ActionRequestMessage
     const currentRunners = await listRunners({
       environment,
       runnerType,
-      runnerOwner
+      runnerOwner,
     });
-    console.info(
-      `${runnerType} ${runnerOwner} has ${currentRunners.length}/${maximumRunners} runners`,
-    );
+    console.info(`${runnerType} ${runnerOwner} has ${currentRunners.length}/${maximumRunners} runners`);
 
     if (currentRunners.length < maximumRunners) {
       // create token
       const registrationToken = enableOrgLevel
         ? await githubInstallationClient.actions.createRegistrationTokenForOrg({ org: payload.repositoryOwner })
         : await githubInstallationClient.actions.createRegistrationTokenForRepo({
-          owner: payload.repositoryOwner,
-          repo: payload.repositoryName,
-        });
+            owner: payload.repositoryOwner,
+            repo: payload.repositoryName,
+          });
       const token = registrationToken.data.token;
 
       const labelsArgument = runnerExtraLabels !== undefined ? `--labels ${runnerExtraLabels}` : '';
@@ -83,10 +81,9 @@ export const scaleUp = async (eventSource: string, payload: ActionRequestMessage
         runnerServiceConfig: enableOrgLevel
           ? `--url ${configBaseUrl}/${payload.repositoryOwner} --token ${token} ${labelsArgument}${runnerGroupArgument}`
           : `--url ${configBaseUrl}/${payload.repositoryOwner}/${payload.repositoryName} ` +
-          `--token ${token} ${labelsArgument}`,
+            `--token ${token} ${labelsArgument}`,
         runnerOwner,
-        runnerType
-
+        runnerType,
       });
     } else {
       console.info('No runner will be created, maximum number of runners reached.');

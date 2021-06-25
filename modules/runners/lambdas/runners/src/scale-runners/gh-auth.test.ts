@@ -51,7 +51,7 @@ describe('Test createGithubAuth', () => {
 });
 
 describe('Test createGithubAuth', () => {
-  const mockedCreatAppAuth = (createAppAuth as unknown) as jest.Mock;
+  const mockedCreatAppAuth = createAppAuth as unknown as jest.Mock;
   const mockedDefaults = jest.spyOn(request, 'defaults');
   let mockedRequestInterface: MockProxy<RequestInterface>;
 
@@ -76,10 +76,14 @@ describe('Test createGithubAuth', () => {
     };
 
     const mockedGet = mocked(getParameterValue);
-    mockedGet.mockResolvedValueOnce(GITHUB_APP_ID).mockResolvedValueOnce(b64)
-      .mockResolvedValueOnce(GITHUB_APP_CLIENT_ID).mockResolvedValueOnce(GITHUB_APP_CLIENT_SECRET);
+    mockedGet
+      .mockResolvedValueOnce(GITHUB_APP_ID)
+      .mockResolvedValueOnce(b64)
+      .mockResolvedValueOnce(GITHUB_APP_CLIENT_ID)
+      .mockResolvedValueOnce(GITHUB_APP_CLIENT_SECRET);
     const mockedAuth = jest.fn();
     mockedAuth.mockResolvedValue({ token });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     mockedCreatAppAuth.mockImplementation((authOptions: StrategyOptions) => {
       return mockedAuth;
     });
@@ -118,10 +122,14 @@ describe('Test createGithubAuth', () => {
     };
 
     const mockedGet = mocked(getParameterValue);
-    mockedGet.mockResolvedValueOnce(GITHUB_APP_ID).mockResolvedValueOnce(b64)
-      .mockResolvedValueOnce(GITHUB_APP_CLIENT_ID).mockResolvedValueOnce(GITHUB_APP_CLIENT_SECRET);
+    mockedGet
+      .mockResolvedValueOnce(GITHUB_APP_ID)
+      .mockResolvedValueOnce(b64)
+      .mockResolvedValueOnce(GITHUB_APP_CLIENT_ID)
+      .mockResolvedValueOnce(GITHUB_APP_CLIENT_SECRET);
     const mockedAuth = jest.fn();
     mockedAuth.mockResolvedValue({ token });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     mockedCreatAppAuth.mockImplementation((authOptions: StrategyOptions) => {
       return mockedAuth;
     });
@@ -161,10 +169,14 @@ describe('Test createGithubAuth', () => {
     };
 
     const mockedGet = mocked(getParameterValue);
-    mockedGet.mockResolvedValueOnce(GITHUB_APP_ID).mockResolvedValueOnce(b64)
-      .mockResolvedValueOnce(GITHUB_APP_CLIENT_ID).mockResolvedValueOnce(GITHUB_APP_CLIENT_SECRET);
+    mockedGet
+      .mockResolvedValueOnce(GITHUB_APP_ID)
+      .mockResolvedValueOnce(b64)
+      .mockResolvedValueOnce(GITHUB_APP_CLIENT_ID)
+      .mockResolvedValueOnce(GITHUB_APP_CLIENT_SECRET);
     const mockedAuth = jest.fn();
     mockedAuth.mockResolvedValue({ token });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     mockedCreatAppAuth.mockImplementation((authOptions: StrategyOptions) => {
       return mockedAuth;
     });

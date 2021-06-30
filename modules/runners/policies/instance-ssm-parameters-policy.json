@@ -8,7 +8,7 @@
       ],
       "Resource": [
         %{~ for arn in arns ~}
-        "${arn_ssm_parameters}"
+        "${arn}"
         %{~ endfor ~}
       ]
     },
@@ -20,7 +20,7 @@
       ],
       "Resource": [
         %{~ for arn in arns ~}
-        "${arn_ssm_parameters}"
+        "${arn}"
         %{~ endfor ~}
       ]
     }

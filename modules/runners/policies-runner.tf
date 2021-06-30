@@ -25,7 +25,10 @@ resource "aws_iam_role_policy" "ssm_parameters" {
   role = aws_iam_role.runner.name
   policy = templatefile("${path.module}/policies/instance-ssm-parameters-policy.json",
     {
-      arn_ssm_parameters = "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/${var.environment}-*"
+      arns = [
+        "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/${var.environment}-*",
+        "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/${var.environment}/*"
+      ]
     }
   )
 }

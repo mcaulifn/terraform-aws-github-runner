@@ -326,3 +326,9 @@ variable "volume_size" {
   type        = number
   default     = 30
 }
+
+variable "kms_key_id" {
+  description = "Optional CMK Key ID to be used for Parameter Store."
+  type        = string
+  default     = null
+}

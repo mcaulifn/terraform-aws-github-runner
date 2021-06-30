@@ -113,6 +113,8 @@ module "runners" {
   runner_iam_role_managed_policy_arns = var.runner_iam_role_managed_policy_arns
 
   ghes_url = var.ghes_url
+
+  kms_key_id = var.kms_key_id
 }
 
 module "runner_binaries" {

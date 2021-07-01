@@ -6,11 +6,7 @@
       "Action": [
         "ssm:DeleteParameter"
       ],
-      "Resource": [
-        %{~ for arn in arns ~}
-        "${arn}"
-        %{~ endfor ~}
-      ]
+      "Resource": "${arn_ssm_parameters}"
     },
     {
       "Effect": "Allow",
@@ -18,11 +14,7 @@
         "ssm:GetParameters",
         "ssm:GetParameter"
       ],
-      "Resource": [
-        %{~ for arn in arns ~}
-        "${arn}"
-        %{~ endfor ~}
-      ]
+      "Resource": "${arn_ssm_parameters}"
     }
   ]
 }

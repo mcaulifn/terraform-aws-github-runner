@@ -68,6 +68,12 @@ resource "aws_iam_role_policy" "scale_up" {
   policy = templatefile("${path.module}/policies/lambda-scale-up.json", {
     arn_runner_instance_role = aws_iam_role.runner.arn
     sqs_arn                  = var.sqs_build_queue.arn
+    gh_app_ssm_arns = [
+      aws_ssm_parameter.github_app_client_id.arn,
+      aws_ssm_parameter.github_app_client_secret.arn,
+      aws_ssm_parameter.github_app_client_id.arn,
+      aws_ssm_parameter.github_app_client_id.arn
+    ]
   })
 }
 

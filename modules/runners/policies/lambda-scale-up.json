@@ -8,17 +8,21 @@
         "ec2:DescribeTags",
         "ec2:RunInstances"
       ],
-      "Resource": ["*"]
+      "Resource": [
+        "*"
+      ]
     },
     {
       "Effect": "Allow",
       "Action": [
         "ec2:CreateTags"
       ],
-      "Resource": ["*"],
+      "Resource": [
+        "*"
+      ],
       "Condition": {
         "StringEquals": {
-          "ec2:CreateAction" : "RunInstances"
+          "ec2:CreateAction": "RunInstances"
         }
       }
     },
@@ -29,8 +33,21 @@
     },
     {
       "Effect": "Allow",
-      "Action": ["ssm:PutParameter"],
+      "Action": [
+        "ssm:PutParameter"
+      ],
       "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParameter"
+      ],
+      "Resource": [
+        %{~ for arn in gh_app_ssm_arns ~}
+        "${arn}"
+        ${~ endfor ~}
+      ]
     },
     {
       "Effect": "Allow",

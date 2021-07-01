@@ -7,19 +7,34 @@
         "ec2:DescribeInstances*",
         "ec2:DescribeTags"
       ],
-      "Resource": ["*"]
+      "Resource": [
+        "*"
+      ]
     },
     {
       "Effect": "Allow",
       "Action": [
         "ec2:TerminateInstances"
       ],
-      "Resource": ["*"],
+      "Resource": [
+        "*"
+      ],
       "Condition": {
         "StringEquals": {
           "ec2:ResourceTag/Application": "github-action-runner"
         }
       }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParameter"
+      ],
+      "Resource": [
+        %{~ for arn in gh_app_ssm_arns ~}
+        "${arn}"
+        ${~ endfor ~}
+      ]
     }
   ]
 }

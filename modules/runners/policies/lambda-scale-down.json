@@ -32,7 +32,7 @@
       ],
       "Resource": [
         %{~ for arn in gh_app_ssm_arns ~}
-        "${arn}"
+        "${arn}",
         %{~ endfor ~}
       ]
     }

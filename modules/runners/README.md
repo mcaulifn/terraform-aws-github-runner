@@ -146,6 +146,7 @@ No Modules.
 | lambda\_scale\_down | n/a |
 | lambda\_scale\_up | n/a |
 | launch\_template | n/a |
+| policy | n/a |
 | role\_runner | n/a |
 | role\_scale\_down | n/a |
 | role\_scale\_up | n/a |

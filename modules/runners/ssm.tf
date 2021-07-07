@@ -13,7 +13,7 @@ resource "aws_ssm_parameter" "github_app_client_secret" {
 }
 
 resource "aws_ssm_parameter" "github_app_id" {
-  name   = "/actions_runner/${var.environment}/github_app"
+  name   = "/actions_runner/${var.environment}/github_app_id"
   type   = "SecureString"
   value  = var.github_app.id
   key_id = var.kms_key_id

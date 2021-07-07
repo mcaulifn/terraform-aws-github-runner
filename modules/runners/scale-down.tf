@@ -63,17 +63,49 @@ resource "aws_iam_role" "scale_down" {
   tags                 = local.tags
 }
 
-resource "aws_iam_role_policy" "scale_down" {
-  name = "${var.environment}-lambda-scale-down-policy"
-  role = aws_iam_role.scale_down.name
-  policy = templatefile("${path.module}/policies/lambda-scale-down.json", {
-    gh_app_ssm_arns = [
+data "aws_iam_policy_document" "scale_down" {
+  statement {
+    actions = [
+      "ec2:DescribeInstances",
+      "ec2:DescribeTags",
+    ]
+    resources = [
+      "*"
+    ]
+  }
+  statement {
+    actions = [
+      "ec2:TerminateInstances"
+    ]
+    resources = [
+      "*"
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "ec2:ResourceTag/Application"
+
+      values = [
+        "github-action-runner"
+      ]
+    }
+  }
+  statement {
+    actions = [
+      "ssm:GetParameter"
+    ]
+    resources = [
       aws_ssm_parameter.github_app_client_id.arn,
       aws_ssm_parameter.github_app_client_secret.arn,
-      aws_ssm_parameter.github_app_client_id.arn,
-      aws_ssm_parameter.github_app_client_id.arn
+      aws_ssm_parameter.github_app_id.arn,
+      aws_ssm_parameter.github_app_key_base64.arn
     ]
-  })
+  }
+}
+
+resource "aws_iam_role_policy" "scale_down" {
+  name   = "${var.environment}-lambda-scale-down-policy"
+  role   = aws_iam_role.scale_down.name
+  policy = data.aws_iam_policy_document.scale_up.json
 }
 
 resource "aws_iam_role_policy" "scale_down_logging" {

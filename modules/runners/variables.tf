@@ -113,13 +113,13 @@ variable "enable_organization_runners" {
   type = bool
 }
 
-variable "github_app" {
-  description = "GitHub app parameters, see your github app. Ensure the key is the base64-encoded `.pem` file (the output of `base64 app.private-key.pem`, not the content of `private-key.pem`)."
+variable "github_app_parameters" {
+  description = "Parameter Store ARNs for GitHub App Parameters."
   type = object({
-    key_base64    = string
-    id            = string
-    client_id     = string
-    client_secret = string
+    key_base64_arn    = string
+    id_arn            = string
+    client_id_arn     = string
+    client_secret_arn = string
   })
 }
 
@@ -327,8 +327,8 @@ variable "volume_size" {
   default     = 30
 }
 
-variable "kms_key_id" {
-  description = "Optional CMK Key ID to be used for Parameter Store."
+variable "kms_key_arn" {
+  description = "Optional CMK Key ARN to be used for Parameter Store."
   type        = string
   default     = null
 }

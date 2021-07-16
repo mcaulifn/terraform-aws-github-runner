@@ -63,49 +63,16 @@ resource "aws_iam_role" "scale_down" {
   tags                 = local.tags
 }
 
-data "aws_iam_policy_document" "scale_down" {
-  statement {
-    actions = [
-      "ec2:DescribeInstances",
-      "ec2:DescribeTags",
-    ]
-    resources = [
-      "*"
-    ]
-  }
-  statement {
-    actions = [
-      "ec2:TerminateInstances"
-    ]
-    resources = [
-      "*"
-    ]
-    condition {
-      test     = "StringEquals"
-      variable = "ec2:ResourceTag/Application"
-
-      values = [
-        "github-action-runner"
-      ]
-    }
-  }
-  statement {
-    actions = [
-      "ssm:GetParameter"
-    ]
-    resources = [
-      aws_ssm_parameter.github_app_client_id.arn,
-      aws_ssm_parameter.github_app_client_secret.arn,
-      aws_ssm_parameter.github_app_id.arn,
-      aws_ssm_parameter.github_app_key_base64.arn
-    ]
-  }
-}
-
 resource "aws_iam_role_policy" "scale_down" {
-  name   = "${var.environment}-lambda-scale-down-policy"
-  role   = aws_iam_role.scale_down.name
-  policy = data.aws_iam_policy_document.scale_up.json
+  name = "${var.environment}-lambda-scale-down-policy"
+  role = aws_iam_role.scale_down.name
+  policy = templatefile("${path.module}/policies/lambda-scale-down.json", {
+    github_app_client_id_arn     = var.github_app_parameters.client_id_arn,
+    github_app_client_secret_arn = var.github_app_parameters.client_secret_arn,
+    github_app_id_arn            = var.github_app_parameters.id_arn,
+    github_app_key_base64_arn    = var.github_app_parameters.key_base64_arn,
+    kms_key_arn                  = var.kms_key_arn != null ? var.kms_key_arn : ""
+  })
 }
 
 resource "aws_iam_role_policy" "scale_down_logging" {

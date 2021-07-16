@@ -98,13 +98,13 @@ No Modules.
 | enable\_ssm\_on\_runners | Enable to allow access the runner instances for debugging purposes via SSM. Note that this adds additional permissions to the runner instances. | `bool` | n/a | yes |
 | environment | A name that identifies the environment, used as prefix and for tagging. | `string` | n/a | yes |
 | ghes\_url | GitHub Enterprise Server URL. DO NOT SET IF USING PUBLIC GITHUB | `string` | `null` | no |
-| github\_app | GitHub app parameters, see your github app. Ensure the key is the base64-encoded `.pem` file (the output of `base64 app.private-key.pem`, not the content of `private-key.pem`). | <pre>object({<br>    key_base64    = string<br>    id            = string<br>    client_id     = string<br>    client_secret = string<br>  })</pre> | n/a | yes |
+| github\_app\_parameters | Parameter Store ARNs for GitHub App Parameters. | <pre>object({<br>    key_base64_arn    = string<br>    id_arn            = string<br>    client_id_arn     = string<br>    client_secret_arn = string<br>  })</pre> | n/a | yes |
 | idle\_config | List of time period that can be defined as cron expression to keep a minimum amount of runners active instead of scaling down to 0. By defining this list you can ensure that in time periods that match the cron expression within 5 seconds a runner is kept idle. | <pre>list(object({<br>    cron      = string<br>    timeZone  = string<br>    idleCount = number<br>  }))</pre> | `[]` | no |
 | instance\_profile\_path | The path that will be added to the instance\_profile, if not set the environment name will be used. | `string` | `null` | no |
 | instance\_type | [DEPRECATED] See instance\_types. | `string` | `"m5.large"` | no |
 | instance\_types | List of instance types for the action runner. | `set(string)` | `null` | no |
 | key\_name | Key pair name | `string` | `null` | no |
-| kms\_key\_id | Optional CMK Key ID to be used for Parameter Store. | `string` | `null` | no |
+| kms\_key\_arn | Optional CMK Key ARN to be used for Parameter Store. | `string` | `null` | no |
 | lambda\_s3\_bucket | S3 bucket from which to specify lambda functions. This is an alternative to providing local files directly. | `any` | `null` | no |
 | lambda\_security\_group\_ids | List of security group IDs associated with the Lambda function. | `list(string)` | `[]` | no |
 | lambda\_subnet\_ids | List of subnets in which the lambda will be launched, the subnets needs to be subnets in the `vpc_id`. | `list(string)` | `[]` | no |
@@ -146,7 +146,6 @@ No Modules.
 | lambda\_scale\_down | n/a |
 | lambda\_scale\_up | n/a |
 | launch\_template | n/a |
-| policy | n/a |
 | role\_runner | n/a |
 | role\_scale\_down | n/a |
 | role\_scale\_up | n/a |

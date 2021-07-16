@@ -7,6 +7,15 @@ locals {
   runner_architecture  = substr(var.instance_type, 0, 2) == "a1" || substr(var.instance_type, 1, 2) == "6g" ? "arm64" : "x64"
 
   ami_filter = length(var.ami_filter) > 0 ? var.ami_filter : local.runner_architecture == "arm64" ? { name = ["amzn2-ami-hvm-2*-arm64-gp2"] } : { name = ["amzn2-ami-hvm-2.*-x86_64-ebs"] }
+
+  kms_key_arn = var.kms_key_id != null ? data.aws_kms_key.cmk[0].arn : null
+
+  github_app_parameters = {
+    client_id_arn     = aws_ssm_parameter.github_app_client_id.arn
+    client_secret_arn = aws_ssm_parameter.github_app_client_secret.arn
+    id_arn            = aws_ssm_parameter.github_app_id.arn
+    key_base64_arn    = aws_ssm_parameter.github_app_key_base64.arn
+  }
 }
 
 resource "random_string" "random" {
@@ -32,13 +41,10 @@ module "webhook" {
   aws_region  = var.aws_region
   environment = var.environment
   tags        = local.tags
-  encryption = {
-    kms_key_id = local.kms_key_id
-    encrypt    = var.encrypt_secrets
-  }
+  kms_key_arn = local.kms_key_arn
 
-  sqs_build_queue           = aws_sqs_queue.queued_builds
-  github_app_webhook_secret = var.github_app.webhook_secret
+  sqs_build_queue               = aws_sqs_queue.queued_builds
+  github_app_webhook_secret_arn = aws_ssm_parameter.github_app_webhook_secret.arn
 
   lambda_s3_bucket                 = var.lambda_s3_bucket
   webhook_lambda_s3_key            = var.webhook_lambda_s3_key
@@ -74,7 +80,7 @@ module "runners" {
   ami_owners          = var.ami_owners
 
   sqs_build_queue                      = aws_sqs_queue.queued_builds
-  github_app                           = var.github_app
+  github_app_parameters                = local.github_app_parameters
   enable_organization_runners          = var.enable_organization_runners
   scale_down_schedule_expression       = var.scale_down_schedule_expression
   minimum_running_time_in_minutes      = var.minimum_running_time_in_minutes
@@ -115,7 +121,7 @@ module "runners" {
 
   ghes_url = var.ghes_url
 
-  kms_key_id = var.kms_key_id
+  kms_key_arn = local.kms_key_arn
 }
 
 module "runner_binaries" {
